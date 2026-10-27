@@ -3,6 +3,9 @@ name: Build Android debug APK
 # Builds a debug APK for sideloading (personal learning use only).
 # No Play Store publishing, no credentials, no signing keys are used here.
 # The APK is a debug build, not a release build.
+# NOTE: GitHub's ubuntu runners already include the Android SDK, so we do
+# NOT use android-actions/setup-android — that step tries to install the
+# obsolete 'tools' package and fails with sdkmanager exit code 1.
 
 on:
   push:
@@ -22,8 +25,12 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Show preinstalled Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_HOME" || true
+          ls "$ANDROID_HOME/build-tools" || true
 
       - name: Download Gradle 8.5
         run: |
